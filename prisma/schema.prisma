@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String         @id @default(cuid())
+  email     String?        @unique
+  name      String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  reports   CareerReport[]
+  logs      GenerationLog[]
+  payments  Payment[]
+}
+
+model CareerReport {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  jobTitle        String
+  years           String
+  city            String
+  salary          String
+  painPoint       String
+  goal            String
+  riskScore       Int
+  growthScore     Int
+  salaryPotential String
+  inputJson       String
+  reportJson      String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([jobTitle])
+}
+
+model GenerationLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  tool       String
+  inputJson  String
+  outputJson String?
+  status     String   @default("success")
+  error      String?
+  createdAt  DateTime @default(now())
+
+  @@index([tool])
+  @@index([createdAt])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  provider    String?
+  orderNo     String?  @unique
+  productName String
+  amount      Int
+  currency    String   @default("CNY")
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+}
