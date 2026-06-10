@@ -87,19 +87,20 @@ prisma/
 - `GenerationLog`
 - `Payment`
 
-MVP 不强制登录，职业报告会保存到 SQLite。
+MVP 不强制登录，职业报告会保存到 Prisma 配置的数据库。生产部署建议使用托管 Postgres。
 
 ## Vercel 部署准备
 
-当前项目可以通过 Vercel 的 Next.js 预设部署，构建命令使用默认的 `npm run build` 即可。
+当前项目可以通过 Vercel 的 Next.js 预设部署，构建命令使用默认的 `npm run build` 即可。构建脚本会先执行 `prisma migrate deploy`，再执行 `prisma generate` 和 `next build`。
 
 建议在 Vercel Project Settings -> Build and Deployment -> Node.js Version 中选择 `20.x`，减少旧版 Next.js 项目在新 Node 运行时上的差异风险。
 
 需要在 Vercel Project Settings -> Environment Variables 中配置：
 
 ```bash
+DATABASE_URL="postgresql://..."
 OPENROUTER_API_KEY="你的 OpenRouter Key"
 OPENROUTER_SITE_URL="https://你的生产域名"
 ```
 
-注意：当前 Prisma datasource 使用本地 SQLite 文件 `prisma/dev.db`，适合本地 MVP 开发。Vercel 生产环境不适合依赖本地 SQLite 文件保存业务数据；如果要让 `/assessment` 生成的报告和 `/report/[id]` 持久可访问，需要先迁移到托管数据库，例如 Postgres（Vercel Marketplace、Neon、Supabase 等），并把 `prisma/schema.prisma` 的 datasource 改成使用生产数据库连接字符串。
+注意：`DATABASE_URL` 必须是 Postgres 连接串，例如 Vercel Marketplace、Neon、Supabase 或 Prisma Postgres 提供的连接地址。首次部署时，Vercel 会根据已提交的 `prisma/migrations` 自动建表。
