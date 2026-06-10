@@ -93,6 +93,8 @@ MVP 不强制登录，职业报告会保存到 SQLite。
 
 当前项目可以通过 Vercel 的 Next.js 预设部署，构建命令使用默认的 `npm run build` 即可。
 
+建议在 Vercel Project Settings -> Build and Deployment -> Node.js Version 中选择 `20.x`，减少旧版 Next.js 项目在新 Node 运行时上的差异风险。
+
 需要在 Vercel Project Settings -> Environment Variables 中配置：
 
 ```bash
